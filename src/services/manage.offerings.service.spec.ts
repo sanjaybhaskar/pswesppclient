@@ -35,10 +35,22 @@ describe('ManageOfferingsService', () => {
   });
 
   it('should retrieve plans from API', () => {
-    const mockPlans = {
+    const mockData = {
       plans: [
-        { name: 'Plan 1', price: 10 },
-        { name: 'Plan 2', price: 20 },
+        { planid: 'plan1', planname: 'Plan 1' },
+        { planid: 'plan2', planname: 'Plan 2' },
+      ],
+      offerings: [
+        {
+          offeringId: 'offering1',
+          planid: 'plan1',
+          offeringName: 'Offering 1',
+        },
+        {
+          offeringId: 'offering2',
+          planid: 'plan2',
+          offeringName: 'Offering 2',
+        },
       ],
     };
     const mockEndpoint = 'your-api-url';
@@ -53,13 +65,20 @@ describe('ManageOfferingsService', () => {
 
     service.getCurrentOfferingData();
 
-    const request = httpMock.match(mockEndpoint);
-    expect(request.length).toBe(1);
-    expect(request[0].request.method).toBe('GET');
-    request[0].flush(mockPlans);
+    const req = httpMock.expectOne('http://example.com/api/current-offering');
+    expect(req.request.method).toBe('GET');
+
+    req.flush(mockData);
 
     service.getPlans().subscribe((plans) => {
-      expect(plans).toEqual(mockPlans);
+      expect(plans).toEqual(mockData.plans);
+    });
+
+    service.getOfferings('plan1').subscribe((offerings) => {
+      const expectedOfferings = mockData.offerings.filter(
+        (offering) => offering.planid === 'plan1'
+      );
+      expect(offerings).toEqual(expectedOfferings);
     });
   });
 

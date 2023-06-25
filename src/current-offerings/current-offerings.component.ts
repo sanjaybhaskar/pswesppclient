@@ -13,6 +13,7 @@ export class CurrentOfferingsComponent implements OnInit {
   singlePlanDropdown?: string;
   planValue: string = '';
   isCreateOfferingsButtonEnabled: boolean = false;
+  planName: any;
 
   constructor(
     private manageOfferingService: ManageOfferingsService,
@@ -37,6 +38,10 @@ export class CurrentOfferingsComponent implements OnInit {
 
   onValueChanges(e: Event): void {
     this.planValue = (e.target as HTMLInputElement).value;
+    const options = JSON.parse(this.planDropDownData);
+    this.planName = options.find(
+      (p: { [key: string]: string }) => p.planid === this.planValue
+    )?.planname;
   }
 
   isCreateNewEntitled(): void {
